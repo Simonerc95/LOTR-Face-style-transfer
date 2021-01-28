@@ -36,7 +36,8 @@ def vis_parsing_maps(im, parsing_anno, stride, save_im=False, save_path='vis_res
     for pi in range(1, num_of_class + 1):
         index = np.where(vis_parsing_anno == pi)
         vis_parsing_anno_color[index[0], index[1], :] = part_colors[pi]
-
+        cv2.imshow('img', vis_parsing_anno_color)
+        cv2.waitKey(0)
     vis_parsing_anno_color = vis_parsing_anno_color.astype(np.uint8)
     # print(vis_parsing_anno_color.shape, vis_im.shape)
     vis_im = cv2.addWeighted(cv2.cvtColor(vis_im, cv2.COLOR_RGB2BGR), 0.4, vis_parsing_anno_color, 0.6, 0)
@@ -85,6 +86,6 @@ def evaluate(respth='./res/test_res', dspth='./data', cp='79999_iter.pth'):
 
 
 if __name__ == "__main__":
-    evaluate(cp='79999_iter.pth')
+    evaluate(dspth='cropped', cp='79999_iter.pth')
 
 
