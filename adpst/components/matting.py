@@ -2,8 +2,7 @@ import numpy as np
 import scipy.ndimage
 import scipy.sparse
 import scipy.sparse.linalg
-import tensorflow as tf
-
+import tensorflow.compat.v1 as tf
 
 def compute_matting_laplacian(image, consts=None, epsilon=1e-5, window_radius=1):
     print("Compute matting laplacian started")

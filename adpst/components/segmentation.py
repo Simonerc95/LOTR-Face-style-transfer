@@ -3,8 +3,8 @@ import os
 import cv2
 import numpy as np
 import scipy.io as sio
-import tensorflow as tf
-
+import tensorflow.compat.v1 as tf
+from torchvision import transforms
 from components.PSPNet.model import PSPNet50, load_color_label_dict
 from components.path import WEIGHTS_DIR
 

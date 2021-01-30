@@ -4,7 +4,7 @@ from operator import itemgetter
 import networkx as nx
 import nltk
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from os.path import join
 
 from components.PSPNet.model import load_color_label_dict
@@ -129,6 +129,7 @@ def merge_segments(content_segmentation, style_segmentation, semantic_threshold,
 
 
 def reduce_dict(dict, image):
+    print(len(dict))
     _, h, w, _ = image.shape
     arr = np.zeros((h, w, 3), int)
     for k, v in dict.items():
@@ -157,10 +158,10 @@ def extract_segmentation_masks(segmentation, colors=None):
     if colors is None:
         # extract distinct colors from segmentation image
         colors = get_unique_colors_from_image(segmentation)
-        colors = [color[::-1] for color in colors]
 
     return {color: mask for (color, mask) in
-            ((color, np.all(segmentation.astype(np.int32) == color[::-1], axis=-1)) for color in colors) if
+            ((color, np.all(segmentation.astype(np.int32) == color, axis=-1)) for color in colors if color != (0,0,0)
+             and color != (17,17,17)) if
             mask.max()}
 
 

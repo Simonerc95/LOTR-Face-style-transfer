@@ -8,7 +8,7 @@ from .network import Network
 
 
 def load_color_label_dict():
-    labels_filename = join(WEIGHTS_DIR, 'PSPNet/ade20k_labels')
+    labels_filename = join(WEIGHTS_DIR, 'PSPNet', 'ade20k_labels')
     file2 = open(labels_filename, 'rb')
     dict = pickle.load(file2)
     file2.close()

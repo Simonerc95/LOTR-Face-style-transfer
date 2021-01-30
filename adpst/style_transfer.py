@@ -5,9 +5,11 @@ from datetime import datetime
 
 import cv2
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+physical_devices = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(physical_devices[0], True)
 from PIL import Image
-
+from torchvision import transforms
 import components.NIMA.model as nima
 import components.VGG19.model as vgg
 from components.matting import compute_matting_laplacian
@@ -241,25 +243,25 @@ if __name__ == "__main__":
     parser.add_argument("--output_image", type=str, help="Output image path, default: result.jpg",
                         default="result.jpg")
     parser.add_argument("--iterations", type=int, help="Number of iterations, default: 4000",
-                        default=4000)
+                        default=2000)
     parser.add_argument("--intermediate_result_interval", type=int,
                         help="Interval of iterations until a intermediate result is saved., default: 100",
                         default=100)
     parser.add_argument("--print_loss_interval", type=int,
                         help="Interval of iterations until the current loss is printed to console., default: 1",
-                        default=1)
+                        default=10)
     parser.add_argument("--content_weight", type=float,
                         help="Weight of the content loss., default: 1",
-                        default=1)
+                        default=1e-1)
     parser.add_argument("--style_weight", type=float,
                         help="Weight of the style loss., default: 100",
-                        default=100)
+                        default=120)
     parser.add_argument("--regularization_weight", type=float,
                         help="Weight of the photorealism regularization.",
-                        default=10 ** 4)
+                        default=10 ** 2)
     parser.add_argument("--nima_weight", type=float,
                         help="Weight for nima loss.",
-                        default=10 ** 5)
+                        default=10 ** 2)
     parser.add_argument("--adam_learning_rate", type=float,
                         help="Learning rate for the adam optimizer., default: 1.0",
                         default=1.0)
@@ -268,7 +270,7 @@ if __name__ == "__main__":
                         default=0.9)
     parser.add_argument("--adam_beta2", type=float,
                         help="Beta2 for the adam optimizer., default: 0.999",
-                        default=0.999)
+                        default=0.99)
     parser.add_argument("--adam_epsilon", type=float,
                         help="Epsilon for the adam optimizer., default: 1e-08",
                         default=1e-08)
@@ -295,8 +297,8 @@ if __name__ == "__main__":
     os.mkdir(result_dir)
 
     # check if manual segmentation masks are available
-    content_segmentation_filename = change_filename('', args.content_image, '_seg', '.png')
-    style_segmentation_filename = change_filename('', args.style_image, '_seg', '.png')
+    content_segmentation_filename = 'res/test_res/content_crop.png'
+    style_segmentation_filename = 'res/test_res/orc0_crop.png'
     load_segmentation = os.path.exists(content_segmentation_filename) and os.path.exists(style_segmentation_filename)
 
     write_metadata(result_dir, args, load_segmentation)
@@ -313,8 +315,10 @@ if __name__ == "__main__":
     # use existing if available
     if (load_segmentation):
         print("Load segmentation from files.")
-        content_segmentation_image = cv2.imread(content_segmentation_filename)
-        style_segmentation_image = cv2.imread(style_segmentation_filename)
+        content_segmentation_image = cv2.cvtColor(cv2.resize(cv2.imread(content_segmentation_filename, ),
+                                                             (256,256), interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2RGB)
+        style_segmentation_image = cv2.cvtColor(cv2.resize(cv2.imread(style_segmentation_filename),
+                                              (256,256), interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2RGB)
         content_segmentation_masks = extract_segmentation_masks(content_segmentation_image)
         style_segmentation_masks = extract_segmentation_masks(style_segmentation_image)
     else:
