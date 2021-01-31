@@ -315,7 +315,7 @@ if __name__ == "__main__":
 
     # check if manual segmentation masks are available
     content_segmentation_filename = 'res/seg_res/content_crop.png'
-    style_segmentation_filename = 'res/seg_res/orc0_crop.png'
+    style_segmentation_filename = 'res/seg_res/style_crop.png'
     load_segmentation = os.path.exists(content_segmentation_filename) and os.path.exists(style_segmentation_filename)
 
     write_metadata(result_dir, args, load_segmentation)
