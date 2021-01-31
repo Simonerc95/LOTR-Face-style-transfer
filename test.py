@@ -62,6 +62,7 @@ def evaluate(respth='./res/test_res', dspth='./data', cp='79999_iter.pth'):
 
     with torch.no_grad():
         for image_path in os.listdir(dspth):
+            print(image_path)
             img = Image.open(osp.join(dspth, image_path))
             img = transforms.ToTensor()(img)
             img = transforms.CenterCrop(min(img.shape[1:]))(img)
@@ -84,6 +85,6 @@ def evaluate(respth='./res/test_res', dspth='./data', cp='79999_iter.pth'):
 
 
 if __name__ == "__main__":
-    evaluate(dspth='cropped', cp='79999_iter.pth')
+    evaluate(dspth='data', cp='79999_iter.pth')
 
 
