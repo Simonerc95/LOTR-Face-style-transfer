@@ -129,7 +129,6 @@ def merge_segments(content_segmentation, style_segmentation, semantic_threshold,
 
 
 def reduce_dict(dict, image):
-    print(len(dict))
     _, h, w, _ = image.shape
     arr = np.zeros((h, w, 3), int)
     for k, v in dict.items():
@@ -160,8 +159,8 @@ def extract_segmentation_masks(segmentation, colors=None):
         colors = get_unique_colors_from_image(segmentation)
 
     return {color: mask for (color, mask) in
-            ((color, np.all(segmentation.astype(np.int32) == color, axis=-1)) for color in colors if color != (0,0,0)
-             and color != (17,17,17)) if
+            ((color, np.all(segmentation.astype(np.int32) == color, axis=-1)) for color in colors if color not in
+             [(0,0,0), (16,16,16), (17,17,17)]) if
             mask.max()}
 
 
