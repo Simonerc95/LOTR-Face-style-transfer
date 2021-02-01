@@ -70,6 +70,9 @@ def style_transfer(content_image, style_image, content_masks, style_masks, init_
         #tf.summary.scalar('NIMA loss', nima_loss)
         tf.summary.scalar('Total loss', total_loss)
 
+        # TODO: Colab notebook (Demo) - Multiple Faces - Keep original masks after style transfer
+        # TODO: Paper:  automated-deep-photo-style-transfer
+
         summary_op = tf.summary.merge_all()
         summary_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(__file__), 'logs/'),
                                                sess.graph)
