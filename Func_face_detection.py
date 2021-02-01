@@ -21,7 +21,7 @@ def face_detection(img_path,im_name, _res, tmp_path):
     face = detected[0]
     (x, y, w, h) = face['box']
     l = max(w,h)
-    scale = 0.4 # take a crop 40% larger than the detected bb
+    scale = 1 # take a crop 100% larger than the detected bb
     crop_side = int(l + scale*l)
     img = np.array(img)
     start_y = max(0, y-int((scale/2)*l))
