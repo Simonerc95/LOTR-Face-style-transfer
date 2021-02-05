@@ -18,15 +18,18 @@ def face_detection(img_path,im_name, _res, tmp_path):
     detected = detector.detect_faces(img)
 
     # Crop a square bounding box around the first face
-    face = detected[0]
-    (x, y, w, h) = face['box']
-    l = max(w,h)
-    scale = 1 # take a crop 100% larger than the detected bb
-    crop_side = int(l + scale*l)
-    img = np.array(img)
-    start_y = max(0, y-int((scale/2)*l))
-    start_x = max(0, x-int((scale/2)*l))
-    img_crop = img[start_y:start_y+crop_side, start_x:start_x+crop_side, :]
+    try:
+        face = detected[0]
+        (x, y, w, h) = face['box']
+        l = max(w,h)
+        scale = 1 # take a crop 100% larger than the detected bb
+        crop_side = int(l + scale*l)
+        img = np.array(img)
+        start_y = max(0, y-int((scale/2)*l))
+        start_x = max(0, x-int((scale/2)*l))
+        img_crop = img[start_y:start_y+crop_side, start_x:start_x+crop_side, :]
+    except:
+        img_crop = img
     print('img_crop_shape' , img_crop.shape)
     cv2.imwrite(join(tmp_path,f'{im_name}_crop.jpg'), cv2.resize(img_crop, (_res,_res)))
 

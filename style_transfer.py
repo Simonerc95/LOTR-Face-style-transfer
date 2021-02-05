@@ -70,7 +70,7 @@ def style_transfer(content_image, style_image, content_masks, style_masks, init_
         #tf.summary.scalar('NIMA loss', nima_loss)
         tf.summary.scalar('Total loss', total_loss)
 
-        # TODO: Colab notebook (Demo) - Multiple Faces - Keep original masks after style transfer
+        # TODO: Colab notebook (Demo) - Tuning
         # TODO: Paper:  automated-deep-photo-style-transfer
 
         summary_op = tf.summary.merge_all()
@@ -191,6 +191,16 @@ def calculate_gram_matrix(convolution_layer, mask):
     mask_reshaped = tf.reshape(mask, shape=[matrix.shape[0], 1])
     matrix_masked = matrix * mask_reshaped
     return tf.matmul(matrix_masked, matrix_masked, transpose_a=True)
+
+def merge_images(img1_arr, img2_arr, masks):
+    assert img1_arr.shape == img2_arr.shape, "shapes of the images have to be equal"
+    assert type(masks) == dict
+    print(img1_arr.shape, list(masks.values())[0].shape)
+    result = img2_arr.copy()
+    for msk in masks.values():
+        result[msk, :] = img1_arr[msk, :]
+    return result
+
 
 
 def load_image(filename):

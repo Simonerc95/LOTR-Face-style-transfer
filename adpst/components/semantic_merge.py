@@ -153,16 +153,22 @@ def get_unique_colors_from_image(image):
     return [tuple(color) for color in unique_colors]
 
 
-def extract_segmentation_masks(segmentation, colors=None):
+def extract_segmentation_masks(segmentation, colors=None, flag = False):
     if colors is None:
         # extract distinct colors from segmentation image
         colors = get_unique_colors_from_image(segmentation)
-
-    return {color: mask for (color, mask) in
-            ((color, np.all(segmentation.astype(np.int32) == color, axis=-1)) for color in colors if color not in
-             [(0,0,0), (16,16,16), (17,17,17)]) if
-            mask.max()}
-
+    if flag:
+        return {color: mask for (color, mask) in
+                ((color, np.all(segmentation.astype(np.int32) == color, axis=-1)) for color in colors if color not in
+                 [(0,0,0), (16,16,16), (17,17,17)]) if
+                mask.max()}, {color: mask for (color, mask) in
+                ((color, np.all(segmentation.astype(np.int32) == color, axis=-1)) for color in  [(0,0,0), (16,16,16), (17,17,17)]) if
+                mask.max()}
+    else:
+        return {color: mask for (color, mask) in
+                ((color, np.all(segmentation.astype(np.int32) == color, axis=-1)) for color in colors if color not in
+                 [(0,0,0), (16,16,16), (17,17,17)]) if
+                mask.max()}
 
 def mask_for_tf(segmentation_mask):
     return [tf.expand_dims(tf.expand_dims(tf.constant(segmentation_mask[key].astype(np.float32)), 0), -1) for key

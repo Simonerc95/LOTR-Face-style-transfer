@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--resize", type=int, help="Resize size, default: 256",
                         default=256)
     parser.add_argument("--iterations", type=int, help="Number of iterations, default: 4000",
-                        default=1000)
+                        default=500)
     parser.add_argument("--intermediate_result_interval", type=int,
                         help="Interval of iterations until a intermediate result is saved., default: 100",
                         default=100)
@@ -32,19 +32,19 @@ if __name__ == "__main__":
                         default=10)
     parser.add_argument("--content_weight", type=float,
                         help="Weight of the content loss., default: 1",
-                        default=1e-1)
+                        default=1e-2)
     parser.add_argument("--style_weight", type=float,
                         help="Weight of the style loss., default: 100",
-                        default=150)
+                        default=180)
     parser.add_argument("--regularization_weight", type=float,
                         help="Weight of the photorealism regularization.",
-                        default=10 ** 3)
+                        default=10 ** 2)
     parser.add_argument("--nima_weight", type=float,
                         help="Weight for nima loss.",
                         default=10 ** 2)
     parser.add_argument("--adam_learning_rate", type=float,
                         help="Learning rate for the adam optimizer., default: 1.0",
-                        default=1.0)
+                        default=10.0)
     parser.add_argument("--adam_beta1", type=float,
                         help="Beta1 for the adam optimizer., default: 0.9",
                         default=0.9)
@@ -99,8 +99,8 @@ if __name__ == "__main__":
             exit(0)
     original = load_image(args.content_image)
 
-
     content_image = load_image(cropped_image)
+
     style_image = load_image(cropped_style)
 
     print("Load segmentation from files.")
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                                                          (res,res), interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2RGB)
     style_segmentation_image = cv2.cvtColor(cv2.resize(cv2.imread(style_segmentation_filename),
                                           (res,res), interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2RGB)
-    content_segmentation_masks = extract_segmentation_masks(content_segmentation_image)
+    content_segmentation_masks, masks_to_keep = extract_segmentation_masks(content_segmentation_image, flag=True)
     style_segmentation_masks = extract_segmentation_masks(style_segmentation_image)
 
 
@@ -131,16 +131,19 @@ if __name__ == "__main__":
     torch.cuda.empty_cache()
     torch.cuda.ipc_collect()
     result = style_transfer(content_image, style_image, mask_for_tf(content_segmentation_masks),
-                            mask_for_tf(style_segmentation_masks), init_image, temp, args)
+                            mask_for_tf(style_segmentation_masks), init_image, temp, args)[0]
 
 
 
     result = np.clip(result, 0, 255.0)
-    cropped_image = cv2.resize(np.array(result[0], dtype='uint8'), (shape[1], shape[0]))
+    result = np.array(result, dtype='uint8')
+
+    final = merge_images(content_image[0], result, masks_to_keep)
+    transferred_image = cv2.resize(final, (shape[1], shape[0]))
 
     original = np.uint8(original)
 
-    original[0, bb_shapes[0]: bb_shapes[1], bb_shapes[2]: bb_shapes[3], :] = cropped_image
+    original[0, bb_shapes[0]: bb_shapes[1], bb_shapes[2]: bb_shapes[3], :] = transferred_image
 
     save_image(original, os.path.join(final_dir, f"{os.path.basename(args.content_image)[:-4]}_to_{os.path.basename(args.style_image)[:-4]}.png"))
 
