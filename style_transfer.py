@@ -7,8 +7,6 @@ sys.path.append('adpst')
 import cv2
 import numpy as np
 import tensorflow.compat.v1 as tf
-physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
 from PIL import Image
 from torchvision import transforms
 import components.NIMA.model as nima
