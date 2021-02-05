@@ -7,7 +7,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
 logging.getLogger('tensorflow').setLevel(logging.FATAL)
 import tensorflow.compat.v1 as tf
 physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
+# tf.config.experimental.set_memory_growth(physical_devices[0], True)
 from style_transfer import *
 from Func_face_detection import *
 from Func_seg import *
@@ -73,6 +73,8 @@ if __name__ == "__main__":
 
     final_dir = join('res', 'final_result')
     temp = join('res', 'temp')
+    if not os.path.exists('res'):
+        os.mkdir('res')
     if not os.path.exists(final_dir):
         os.mkdir(final_dir)
     if not os.path.exists(temp):
