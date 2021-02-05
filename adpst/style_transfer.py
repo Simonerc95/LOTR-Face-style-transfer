@@ -9,11 +9,10 @@ import tensorflow.compat.v1 as tf
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 from PIL import Image
-from torchvision import transforms
 import components.NIMA.model as nima
 import components.VGG19.model as vgg
-from components.matting import compute_matting_laplacian
-from components.segmentation import compute_segmentation
+from components import compute_matting_laplacian
+from components import compute_segmentation
 from components.semantic_merge import merge_segments, reduce_dict, mask_for_tf, extract_segmentation_masks
 
 

@@ -1,20 +1,12 @@
-import argparse
 import json
 import os
-from datetime import datetime
 import sys
 sys.path.append('adpst')
-import cv2
 import numpy as np
 import tensorflow.compat.v1 as tf
 from PIL import Image
-from torchvision import transforms
-import components.NIMA.model as nima
 import components.VGG19.model as vgg
-from components.matting import compute_matting_laplacian
-from components.segmentation import compute_segmentation
-from components.semantic_merge import merge_segments, reduce_dict, mask_for_tf, extract_segmentation_masks
-
+from components import compute_matting_laplacian
 
 
 def style_transfer(content_image, style_image, content_masks, style_masks, init_image, result_dir, args):
