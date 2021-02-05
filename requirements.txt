@@ -8,5 +8,3 @@ keras
 pillow
 opencv-python
 mtcnn
-tensorpack
-sematch
