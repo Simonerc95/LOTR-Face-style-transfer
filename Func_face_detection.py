@@ -29,7 +29,14 @@ def face_detection(img_path,im_name, _res, tmp_path):
         start_x = max(0, x-int((scale/2)*l))
         img_crop = img[start_y:start_y+crop_side, start_x:start_x+crop_side, :]
     except:
-        img_crop = img
+        center = np.array(img.shape[:-1]) // 2
+        h, w = img.shape[:-1]
+        crop_side = int(min(w, h))
+        start_x = max(0, int(center[1] - crop_side/2))
+        start_y = max(0, int(center[0] - crop_side/2))
+        img_crop = img[int(start_y):int(start_y + crop_side), int(start_x):int(start_x + crop_side)]
+
+
     print('img_crop_shape' , img_crop.shape)
     cv2.imwrite(join(tmp_path,f'{im_name}_crop.jpg'), cv2.resize(img_crop, (_res,_res)))
 
