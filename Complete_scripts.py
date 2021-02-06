@@ -33,7 +33,7 @@ if __name__ == "__main__":
                         default=10)
     parser.add_argument("--content_weight", type=float,
                         help="Weight of the content loss., default: 1",
-                        default=1e-1)
+                        default=3e-2)
     parser.add_argument("--style_weight", type=float,
                         help="Weight of the style loss., default: 100",
                         default=500)
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     if original.shape[-1] == 4:
         original = cv2.cvtColor(original, cv2.COLOR_RGBA2RGB)
     h, w = original.shape[1:-1]
-    max_res = 512 / max(h, w)
+    max_res = 1024 / max(h, w)
     original = np.expand_dims(cv2.resize(original[0], (int(max_res*w), int(max_res*h))), 0)
     original[0, bb_shapes[0]: bb_shapes[1], bb_shapes[2]: bb_shapes[3], :] = transferred_image
 
