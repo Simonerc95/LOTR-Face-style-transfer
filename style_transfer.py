@@ -7,7 +7,7 @@ import tensorflow.compat.v1 as tf
 from PIL import Image
 import components.VGG19.model as vgg
 from components.matting import compute_matting_laplacian
-
+from components.semantic_merge import *
 
 def style_transfer(content_image, style_image, content_masks, style_masks, init_image, result_dir, args):
     print("Style transfer started")
