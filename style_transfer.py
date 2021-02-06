@@ -8,7 +8,7 @@ from PIL import Image
 import components.VGG19.model as vgg
 from components.matting import compute_matting_laplacian
 from components.semantic_merge import *
-
+import cv2
 def style_transfer(content_image, style_image, content_masks, style_masks, init_image, result_dir, args):
     print("Style transfer started")
 
@@ -185,10 +185,15 @@ def calculate_gram_matrix(convolution_layer, mask):
 def merge_images(img1_arr, img2_arr, masks):
     assert img1_arr.shape == img2_arr.shape, "shapes of the images have to be equal"
     assert type(masks) == dict
-    print(img1_arr.shape, list(masks.values())[0].shape)
+    H, W = img1_arr.shape[:-1]
     result = img2_arr.copy()
-    for msk in masks.values():
-        result[msk, :] = img1_arr[msk, :]
+    Y = np.linspace(-1, 1, H)[None, :]
+    X = np.linspace(-1, 1, W)[:, None]
+    alpha = np.sqrt(X ** 6 + Y ** 2)
+    alpha = 1 - np.clip(0, 1, alpha)
+    channel_grads = np.stack([alpha,alpha,alpha], axis=2)
+    result = result * channel_grads + img1_arr * (1-channel_grads)
+
     return result
 
 
