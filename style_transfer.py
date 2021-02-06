@@ -189,7 +189,7 @@ def merge_images(img1_arr, img2_arr, masks):
     result = img2_arr.copy()
     Y = np.linspace(-1, 1, H)[None, :]
     X = np.linspace(-1, 1, W)[:, None]
-    alpha = np.sqrt(X ** 6 + Y ** 2)
+    alpha = np.sqrt(X ** 8 + Y ** 2)
     alpha = 1 - np.clip(0, 1, alpha)
     channel_grads = np.stack([alpha,alpha,alpha], axis=2)
     result = result * channel_grads + img1_arr * (1-channel_grads)

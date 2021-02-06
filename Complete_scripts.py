@@ -33,10 +33,10 @@ if __name__ == "__main__":
                         default=10)
     parser.add_argument("--content_weight", type=float,
                         help="Weight of the content loss., default: 1",
-                        default=1e-2)
+                        default=1e-1)
     parser.add_argument("--style_weight", type=float,
                         help="Weight of the style loss., default: 100",
-                        default=180)
+                        default=500)
     parser.add_argument("--regularization_weight", type=float,
                         help="Weight of the photorealism regularization.",
                         default=10 ** 2)
@@ -145,6 +145,8 @@ if __name__ == "__main__":
     transferred_image = cv2.resize(final, (shape[1], shape[0]))
 
     original = np.uint8(original)
+    if original.shape[-1] == 4:
+        original = cv2.cvtColor(original, cv2.COLOR_RGBA2RGB)
     h, w = original.shape[1:-1]
     max_res = 512 / max(h, w)
     original = np.expand_dims(cv2.resize(original[0], (int(max_res*w), int(max_res*h))), 0)

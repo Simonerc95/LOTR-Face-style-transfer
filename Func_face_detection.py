@@ -14,6 +14,8 @@ import numpy as np
 def face_detection(img_path,im_name, _res, tmp_path):
 
     img = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+    if img.shape[-1] == 4:
+        img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
     h,w = img.shape[:-1]
     max_res = 512 / max(h,w)
     img = cv2.resize(img, (int(max_res*w), int(max_res*h)))
