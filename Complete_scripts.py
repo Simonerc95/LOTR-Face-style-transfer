@@ -145,7 +145,9 @@ if __name__ == "__main__":
     transferred_image = cv2.resize(final, (shape[1], shape[0]))
 
     original = np.uint8(original)
-
+    h, w = original.shape[1:-1]
+    max_res = 512 / max(h, w)
+    original = np.expand_dims(cv2.resize(original[0], (int(max_res*w), int(max_res*h))), 0)
     original[0, bb_shapes[0]: bb_shapes[1], bb_shapes[2]: bb_shapes[3], :] = transferred_image
 
     save_image(original, os.path.join(final_dir, f"{os.path.basename(args.content_image)[:-4]}_to_{os.path.basename(args.style_image)[:-4]}.png"))
