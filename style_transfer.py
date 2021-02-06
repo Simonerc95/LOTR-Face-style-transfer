@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 from PIL import Image
 import components.VGG19.model as vgg
-from components import compute_matting_laplacian
+from components.matting import compute_matting_laplacian
 
 
 def style_transfer(content_image, style_image, content_masks, style_masks, init_image, result_dir, args):
