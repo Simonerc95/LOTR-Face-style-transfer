@@ -33,13 +33,13 @@ if __name__ == "__main__":
                         default=10)
     parser.add_argument("--content_weight", type=float,
                         help="Weight of the content loss., default: 1",
-                        default=3e-2)
+                        default=3e-1)
     parser.add_argument("--style_weight", type=float,
                         help="Weight of the style loss., default: 100",
                         default=500)
     parser.add_argument("--regularization_weight", type=float,
                         help="Weight of the photorealism regularization.",
-                        default=10 ** 2)
+                        default=10 ** 3)
     parser.add_argument("--nima_weight", type=float,
                         help="Weight for nima loss.",
                         default=10 ** 2)
@@ -136,7 +136,9 @@ if __name__ == "__main__":
     result = style_transfer(content_image, style_image, mask_for_tf(content_segmentation_masks),
                             mask_for_tf(style_segmentation_masks), init_image, temp, args)[0]
 
-
+    if os.path.exists('logs'):
+        for file in os.listdir('logs'):
+            os.remove(join('logs', file))
 
     result = np.clip(result, 0, 255.0)
     result = np.array(result, dtype='uint8')
