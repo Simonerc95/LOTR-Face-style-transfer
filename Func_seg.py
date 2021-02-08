@@ -67,6 +67,9 @@ def face_parsing(respth='./res/seg_res', dspth='./cropped', cp='79999_iter.pth',
             parsing = out.squeeze(0).cpu().numpy().argmax(0)
 
             print(np.unique(parsing))
+            if len(np.unique(parsing)) < 5:
+                print(f"Warning: style transfer using only {len(np.unique(parsing))} masks from {image_path}, \n"
+                      f"This may lead to bad results.")
             print('imageeeeeeeeeeee', image_path)
 
             vis_parsing_maps(image, parsing, resize_size, stride=1, save_im=True, save_path=osp.join(respth, image_path[:-4]+'.png'))
