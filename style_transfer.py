@@ -46,19 +46,14 @@ def style_transfer(content_image, style_image, content_masks, style_masks, init_
 
         photorealism_regularization = calculate_photorealism_regularization(transfer_image_vgg, content_image)
 
-        #nima_loss = compute_nima_loss(transfer_image_nima)
-
         content_loss = args.content_weight * content_loss
         style_loss = args.style_weight * style_loss
         photorealism_regularization = args.regularization_weight * photorealism_regularization
-        #nima_loss = args.nima_weight * nima_loss
-
         total_loss = content_loss + style_loss + photorealism_regularization# + nima_loss
 
         tf.summary.scalar('Content loss', content_loss)
         tf.summary.scalar('Style loss', style_loss)
         tf.summary.scalar('Photorealism Regularization', photorealism_regularization)
-        #tf.summary.scalar('NIMA loss', nima_loss)
         tf.summary.scalar('Total loss', total_loss)
 
 
