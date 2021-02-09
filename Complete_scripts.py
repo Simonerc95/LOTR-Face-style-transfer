@@ -33,16 +33,13 @@ if __name__ == "__main__":
                         default=10)
     parser.add_argument("--content_weight", type=float,
                         help="Weight of the content loss., default: 1",
-                        default=3e-1)
+                        default=1e-3)
     parser.add_argument("--style_weight", type=float,
                         help="Weight of the style loss., default: 100",
-                        default=500)
+                        default=1e3)
     parser.add_argument("--regularization_weight", type=float,
                         help="Weight of the photorealism regularization.",
-                        default=10 ** 3)
-    parser.add_argument("--nima_weight", type=float,
-                        help="Weight for nima loss.",
-                        default=10 ** 2)
+                        default=10 ** 4)
     parser.add_argument("--adam_learning_rate", type=float,
                         help="Learning rate for the adam optimizer., default: 1.0",
                         default=10.0)
@@ -55,10 +52,10 @@ if __name__ == "__main__":
     parser.add_argument("--adam_epsilon", type=float,
                         help="Epsilon for the adam optimizer., default: 1e-08",
                         default=1e-08)
-    parser.add_argument("--semantic_thresh", type=float, help="Semantic threshold for label grouping., default: 0.8",
-                        default=0.8)
-    parser.add_argument("--similarity_metric", type=str, help="Semantic similarity metric for label grouping., default: li",
-                        default="li")
+    parser.add_argument("--do_hair", type=bool,
+                        help="Specify if transfer should be done including hair, default: False",
+                        default=False)
+
     init_image_options = ["noise", "content", "style"]
     similarity_metric_options = ["li", "wpath", "jcn", "lin", "wup", "res"]
     parser.add_argument("--init", type=str, help="Initialization image (%s).", default="content")
@@ -66,22 +63,24 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     assert (args.init in init_image_options)
-    # For more information on the similarity metrics: http://gsi-upm.github.io/sematch/similarity/#word-similarity
-    assert (args.similarity_metric in similarity_metric_options)
+
     res = args.resize
     if args.gpu:
         os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
-    final_dir = join('res', 'final_result')
+    final_folder = 'Transfered_WOW'
+    if not os.path.exists(final_folder):
+        os.mkdir(final_folder)
+
     temp = join('res', 'temp')
     if not os.path.exists('res'):
         os.mkdir('res')
-    if not os.path.exists(final_dir):
-        os.mkdir(final_dir)
     if not os.path.exists(temp):
         os.mkdir(temp)
     if not os.path.exists(join(temp,'crops')):
         os.mkdir(join(temp,'crops'))
+
+
     print('enterrrrrr cropping')
     cropped_image, bb_shapes, shape = face_detection(args.content_image, 'content', _res=res, tmp_path=join(temp, 'crops'))
     cropped_style, _, _ = face_detection(args.style_image, 'style', _res=res, tmp_path=join(temp, 'crops'))
@@ -111,9 +110,10 @@ if __name__ == "__main__":
                                                          (res,res), interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2RGB)
     style_segmentation_image = cv2.cvtColor(cv2.resize(cv2.imread(style_segmentation_filename),
                                           (res,res), interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2RGB)
-    content_segmentation_masks, masks_to_keep = extract_segmentation_masks(content_segmentation_image, flag=True)
-    style_segmentation_masks = extract_segmentation_masks(style_segmentation_image)
+    content_segmentation_masks, masks_to_keep = extract_segmentation_masks(content_segmentation_image, flag=True, do_hair=args.do_hair)
+    style_segmentation_masks = extract_segmentation_masks(style_segmentation_image, do_hair=args.do_hair)
 
+    content_segmentation_masks, style_segmentation_masks = merge_segments(content_segmentation_masks, style_segmentation_masks)
 
     cv2.imwrite(change_filename(temp, args.content_image, '_seg', '.png'),
                 reduce_dict(content_segmentation_masks, content_image))
@@ -154,5 +154,5 @@ if __name__ == "__main__":
     original = np.expand_dims(cv2.resize(original[0], (int(max_res*w), int(max_res*h))), 0)
     original[0, bb_shapes[0]: bb_shapes[1], bb_shapes[2]: bb_shapes[3], :] = transferred_image
 
-    save_image(original, os.path.join(final_dir, f"{os.path.basename(args.content_image)[:-4]}_to_{os.path.basename(args.style_image)[:-4]}.png"))
+    save_image(original, os.path.join(final_folder, f"{os.path.basename(args.content_image)[:-4]}_to_{os.path.basename(args.style_image)[:-4]}.png"))
 

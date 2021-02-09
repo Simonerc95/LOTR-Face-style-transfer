@@ -9,6 +9,7 @@ import components.VGG19.model as vgg
 from components.matting import compute_matting_laplacian
 from components.semantic_merge import *
 import cv2
+
 def style_transfer(content_image, style_image, content_masks, style_masks, init_image, result_dir, args):
     print("Style transfer started")
 
@@ -60,8 +61,6 @@ def style_transfer(content_image, style_image, content_masks, style_masks, init_
         #tf.summary.scalar('NIMA loss', nima_loss)
         tf.summary.scalar('Total loss', total_loss)
 
-        # TODO: Colab notebook (Demo) - Tuning
-        # TODO: Paper:  automated-deep-photo-style-transfer
 
         summary_op = tf.summary.merge_all()
         summary_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(__file__), 'logs/'),
@@ -189,7 +188,7 @@ def merge_images(img1_arr, img2_arr, masks):
     result = img2_arr.copy()
     Y = np.linspace(-1, 1, H)[None, :]
     X = np.linspace(-1, 1, W)[:, None]
-    alpha = np.sqrt(X ** 6 + Y ** 4)
+    alpha = np.sqrt(X ** 6 + Y ** 6)
     alpha = 1 - np.clip(0, 1, alpha)
     channel_grads = np.stack([alpha,alpha,alpha], axis=2)
     result = result * channel_grads + img1_arr * (1-channel_grads)
@@ -230,9 +229,6 @@ def write_metadata(dir, args):
         "content_weight": args.content_weight,
         "style_weight": args.style_weight,
         "regularization_weight": args.regularization_weight,
-        "nima_weight": args.nima_weight,
-        "semantic_thresh": args.semantic_thresh,
-        "similarity_metric": args.similarity_metric,
         "adam": {
             "learning_rate": args.adam_learning_rate,
             "beta1": args.adam_beta1,
