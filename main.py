@@ -80,12 +80,11 @@ if __name__ == "__main__":
         os.mkdir(join(temp,'crops'))
 
 
-    print('enterrrrrr cropping')
+    print('enter cropping')
     cropped_image, bb_shapes, shape = face_detection(args.content_image, 'content', _res=res, tmp_path=join(temp, 'crops'))
     cropped_style, _, _ = face_detection(args.style_image, 'style', _res=res, tmp_path=join(temp, 'crops'))
-    print('enterrrrrr segmentation')
+    print('enter segmentation')
     face_parsing(respth=temp, dspth=join(temp, 'crops'), cp='79999_iter.pth', resize_size=res)
-    print(f"shape = {shape}")
 
     content_segmentation_filename = join(temp, 'content_crop.png')
     style_segmentation_filename = join(temp, 'style_crop.png')

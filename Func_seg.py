@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- encoding: utf-8 -*-
 from model import BiSeNet
 import torch
 import os
@@ -48,9 +46,6 @@ def face_parsing(respth='./res/seg_res', dspth='./cropped', cp='79999_iter.pth',
 
     with torch.no_grad():
         for image_path in os.listdir(dspth):
-            print(image_path)
-            print('data' , dspth)
-            print('hereeeee',osp.join(dspth, image_path))
             img = Image.open(osp.join(dspth, image_path))
             img = transforms.ToTensor()(img)
             img = transforms.CenterCrop(min(img.shape[1:]))(img)
@@ -62,11 +57,10 @@ def face_parsing(respth='./res/seg_res', dspth='./cropped', cp='79999_iter.pth',
             out = net(img)[0]
             parsing = out.squeeze(0).cpu().numpy().argmax(0)
 
-            print(np.unique(parsing))
+            print(f"{image_path[:-4]} has masks: {np.unique(parsing)}")
             if len(np.unique(parsing)) < 5:
                 print(f"Warning: style transfer using only {len(np.unique(parsing))} masks from {image_path}, \n"
                       f"This may lead to bad results.")
-            print('imageeeeeeeeeeee', image_path)
 
             vis_parsing_maps(image, parsing, resize_size, stride=1, save_im=True, save_path=osp.join(respth, image_path[:-4]+'.png'))
 

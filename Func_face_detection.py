@@ -37,8 +37,6 @@ def face_detection(img_path,im_name, _res, tmp_path):
         start_y = max(0, int(center[0] - crop_side/2))
         img_crop = img[int(start_y):int(start_y + crop_side), int(start_x):int(start_x + crop_side)]
 
-
-    print('img_crop_shape' , img_crop.shape)
     cv2.imwrite(join(tmp_path,f'{im_name}_crop.jpg'), cv2.resize(img_crop, (_res,_res)))
 
     return join(tmp_path,f'{im_name}_crop.jpg'), (start_y, start_y+crop_side, start_x, start_x+crop_side), img_crop.shape[:2]
