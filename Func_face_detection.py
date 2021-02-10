@@ -16,9 +16,10 @@ def face_detection(img_path,im_name, _res, tmp_path):
     img = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
     if img.shape[-1] == 4:
         img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
-    h,w = img.shape[:-1]
-    max_res = 1024 / max(h,w)
-    img = cv2.resize(img, (int(max_res*w), int(max_res*h)))
+    h, w = img.shape[:-1]
+    if max(h,w) > 1024:
+        max_res = 1024 / max(h,w)
+        img = cv2.resize(img, (int(max_res*w), int(max_res*h)))
     detector = MTCNN()
     detected = detector.detect_faces(img)
 
@@ -27,7 +28,7 @@ def face_detection(img_path,im_name, _res, tmp_path):
         face = detected[0]
         (x, y, w, h) = face['box']
         l = max(w,h)
-        scale = 1 # take a crop 100% larger than the detected bb
+        scale = 0.75 # take a crop 75% larger than the detected bb
         crop_side = int(l + scale*l)
         img = np.array(img)
         start_y = max(0, y-int((scale/2)*l))

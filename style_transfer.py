@@ -29,8 +29,8 @@ def style_transfer(content_image, style_image, content_masks, style_masks, init_
         sess.run(tf.global_variables_initializer())
         weight_restorer.init(sess)
         content_conv4_2 = sess.run(fetches=vgg19.conv4_2, feed_dict={image_placeholder: content_image})
-        style_conv1_1, style_conv2_1, style_conv3_1, style_conv4_1, style_conv5_1 = sess.run(
-            fetches=[vgg19.conv1_1, vgg19.conv2_1, vgg19.conv3_1, vgg19.conv4_1, vgg19.conv5_1],
+        style_conv1_1, style_conv2_1, style_conv2_2, style_conv3_1, style_conv4_1 = sess.run(
+            fetches=[vgg19.conv1_1, vgg19.conv2_1, vgg19.conv2_2, vgg19.conv3_1, vgg19.conv4_1],
             feed_dict={image_placeholder: style_image})
 
         with tf.variable_scope("", reuse=True):
@@ -40,9 +40,9 @@ def style_transfer(content_image, style_image, content_masks, style_masks, init_
 
         style_loss = (1. / 5.) * calculate_layer_style_loss(style_conv1_1, vgg19.conv1_1, content_masks, style_masks)
         style_loss += (1. / 5.) * calculate_layer_style_loss(style_conv2_1, vgg19.conv2_1, content_masks, style_masks)
+        style_loss += (1. / 5.) * calculate_layer_style_loss(style_conv2_2, vgg19.conv2_2, content_masks, style_masks)
         style_loss += (1. / 5.) * calculate_layer_style_loss(style_conv3_1, vgg19.conv3_1, content_masks, style_masks)
         style_loss += (1. / 5.) * calculate_layer_style_loss(style_conv4_1, vgg19.conv4_1, content_masks, style_masks)
-        style_loss += (1. / 5.) * calculate_layer_style_loss(style_conv5_1, vgg19.conv5_1, content_masks, style_masks)
 
         photorealism_regularization = calculate_photorealism_regularization(transfer_image_vgg, content_image)
 
@@ -183,11 +183,10 @@ def merge_images(img1_arr, img2_arr, masks):
     result = img2_arr.copy()
     Y = np.linspace(-1, 1, H)[None, :]
     X = np.linspace(-1, 1, W)[:, None]
-    alpha = np.sqrt(X ** 6 + Y ** 6)
+    alpha = np.sqrt(X ** 6 + Y ** 12)
     alpha = 1 - np.clip(0, 1, alpha)
     channel_grads = np.stack([alpha,alpha,alpha], axis=2)
     result = result * channel_grads + img1_arr * (1-channel_grads)
-
     return result
 
 

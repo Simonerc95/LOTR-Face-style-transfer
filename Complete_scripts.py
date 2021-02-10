@@ -23,26 +23,26 @@ if __name__ == "__main__":
                         default="result.jpg")
     parser.add_argument("--resize", type=int, help="Resize size, default: 256",
                         default=256)
-    parser.add_argument("--iterations", type=int, help="Number of iterations, default: 4000",
-                        default=500)
+    parser.add_argument("--iterations", type=int, help="Number of iterations, default: 1000",
+                        default=1000)
     parser.add_argument("--intermediate_result_interval", type=int,
                         help="Interval of iterations until a intermediate result is saved., default: 100",
                         default=100)
     parser.add_argument("--print_loss_interval", type=int,
-                        help="Interval of iterations until the current loss is printed to console., default: 1",
+                        help="Interval of iterations until the current loss is printed to console., default: 10",
                         default=10)
     parser.add_argument("--content_weight", type=float,
                         help="Weight of the content loss., default: 1",
-                        default=1e-3)
+                        default=1e-2)
     parser.add_argument("--style_weight", type=float,
                         help="Weight of the style loss., default: 100",
-                        default=1e3)
+                        default=150)
     parser.add_argument("--regularization_weight", type=float,
                         help="Weight of the photorealism regularization.",
-                        default=10 ** 4)
+                        default=2e2)
     parser.add_argument("--adam_learning_rate", type=float,
                         help="Learning rate for the adam optimizer., default: 1.0",
-                        default=10.0)
+                        default=1.0)
     parser.add_argument("--adam_beta1", type=float,
                         help="Beta1 for the adam optimizer., default: 0.9",
                         default=0.9)
@@ -57,7 +57,6 @@ if __name__ == "__main__":
                         default=False)
 
     init_image_options = ["noise", "content", "style"]
-    similarity_metric_options = ["li", "wpath", "jcn", "lin", "wup", "res"]
     parser.add_argument("--init", type=str, help="Initialization image (%s).", default="content")
     parser.add_argument("--gpu", help="comma separated list of GPU(s) to use.", default="0")
 
@@ -100,6 +99,14 @@ if __name__ == "__main__":
             print("Image file {} does not exist.".format(path))
             exit(0)
     original = load_image(args.content_image)
+
+    original = np.uint8(original)
+    if original.shape[-1] == 4:
+        original = cv2.cvtColor(original, cv2.COLOR_RGBA2RGB)
+    h, w = original.shape[1:-1]
+    if max(h, w) > 1024:
+        max_res = 1024 / max(h, w)
+        original = np.expand_dims(cv2.resize(original[0], (int(max_res * w), int(max_res * h))), 0)
 
     content_image = load_image(cropped_image)
 
@@ -146,12 +153,6 @@ if __name__ == "__main__":
     final = merge_images(content_image[0], result, masks_to_keep)
     transferred_image = cv2.resize(final, (shape[1], shape[0]))
 
-    original = np.uint8(original)
-    if original.shape[-1] == 4:
-        original = cv2.cvtColor(original, cv2.COLOR_RGBA2RGB)
-    h, w = original.shape[1:-1]
-    max_res = 1024 / max(h, w)
-    original = np.expand_dims(cv2.resize(original[0], (int(max_res*w), int(max_res*h))), 0)
     original[0, bb_shapes[0]: bb_shapes[1], bb_shapes[2]: bb_shapes[3], :] = transferred_image
 
     save_image(original, os.path.join(final_folder, f"{os.path.basename(args.content_image)[:-4]}_to_{os.path.basename(args.style_image)[:-4]}.png"))
