@@ -3,12 +3,12 @@ sys.path.append('adpst')
 import logging
 import os
 import argparse
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
 logging.getLogger('tensorflow').setLevel(logging.FATAL)
 import tensorflow.compat.v1 as tf
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
+tf.logging.set_verbosity(tf.logging.ERROR)
 from style_transfer import *
 from Func_face_detection import *
 from Func_seg import *

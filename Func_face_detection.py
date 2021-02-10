@@ -2,11 +2,6 @@ import cv2
 import os
 from os.path import join
 from mtcnn import MTCNN
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior() 
-physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
-tf.logging.set_verbosity(tf.logging.ERROR)
 import numpy as np
 
 #face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')

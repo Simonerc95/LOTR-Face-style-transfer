@@ -1,11 +1,7 @@
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
-
-from logger import setup_logger
 from model import BiSeNet
-
 import torch
-
 import os
 import os.path as osp
 import numpy as np

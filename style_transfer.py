@@ -1,9 +1,8 @@
 import json
 import os
-import sys
-sys.path.append('adpst')
 import numpy as np
 import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from PIL import Image
 import components.VGG19.model as vgg
 from components.matting import compute_matting_laplacian

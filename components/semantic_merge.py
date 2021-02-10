@@ -2,12 +2,10 @@ import itertools as it
 from operator import itemgetter
 
 import networkx as nx
-import nltk
+
 import numpy as np
 import tensorflow.compat.v1 as tf
 from os.path import join
-
-from components.PSPNet.model import load_color_label_dict
 from components.path import WEIGHTS_DIR
 
 
