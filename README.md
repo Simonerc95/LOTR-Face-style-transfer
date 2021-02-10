@@ -3,3 +3,7 @@ This work is based on the [Automated deep photo style transfer](https://github.c
 The face parsing was done using the BiSeNet network, in the implementation of [zllrunning](https://github.com/zllrunning/face-parsing.PyTorch).
 
 ![Screenshot](us.png)
+
+
+
+![Screenshot2](nus.png)
